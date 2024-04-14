@@ -49,15 +49,15 @@ pnpm add -D eslint@8.56.0 @typescript-eslint/eslint-plugin @typescript-eslint/pa
 
 # Install other dependencies
 colorGreen "Installing other development dependencies..."
-pnpm add -D vitest @vitest/ui @types/jest @testing-library/react @testing-library/jest-dom @testing-library/user-event ts-jest jsdom concurrently prettier eslint-plugin-prettier eslint-config-prettier
+pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @types/jest @testing-library/react @testing-library/jest-dom @testing-library/user-event ts-jest jsdom concurrently prettier eslint-plugin-prettier eslint-config-prettier
 
 # Adding scripts to package.json for TDD and testing using the correct jq syntax
 # Modify the package.json to add additional scripts
 jq '.scripts.dev = "vite" |
   .scripts.build = "vite build" |
   .scripts.test = "vitest" |
-  .scripts["test:watch"] = "vitest watch" |
-  .scripts["test:coverage"] = "vitest coverage" |
+  .scripts["test:watch"] = "vitest --watch" |
+  .scripts["test:coverage"] = "vitest --coverage" |
   .scripts["test:ui"] = "vitest --ui" |
   .scripts.lint = "eslint . --ext .js,.jsx,.ts,.tsx" |
   .scripts["lint:fix"] = "eslint . --ext .js,.jsx,.ts,.tsx --fix" |
@@ -129,10 +129,31 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
-    // ... other configurations
+    include: ['**/*.{test,spec}.{js,jsx,ts,tsx}'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/cypress/**',
+      '**/.{idea,git,cache,output,temp}/**',
+      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*',
+    ],
+    watchExclude: ['**/node_modules/**', '**/dist/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      all: true,
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      exclude: [
+        '**/*.test.ts',
+        '**/*.spec.ts',
+        '**/*.test.tsx',
+        '**/*.spec.tsx',
+      ],
+    },
   }
 })
 EOF
+
 
 # Output success message
 colorBlue "Project setup complete! 👍  'cd $DIRECTORY_PATH$PROJECT_NAME' 'pnpm run start:tdd"
