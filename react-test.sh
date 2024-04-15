@@ -34,9 +34,6 @@ pnpm create vite "$PROJECT_NAME" --template react-ts
 # Now navigate into the project directory
 cd "$PROJECT_NAME"
 
-# Create a .nvmrc file with the desired Node version
-colorGreen "Creating .nvmrc file with Node..."
-echo "v20.9.0" > .nvmrc
 
 # Install Vite plugin for React with SWC for fast refresh
 colorGreen "Installing Vite plugin for React with SWC..."
@@ -137,6 +134,7 @@ export default defineConfig({
       '**/.{idea,git,cache,output,temp}/**',
       '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*',
     ],
+    reporters: 'verbose',
     watchExclude: ['**/node_modules/**', '**/dist/**'],
     coverage: {
       provider: 'v8',
