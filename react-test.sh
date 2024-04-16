@@ -154,4 +154,4 @@ EOF
 
 
 # Output success message
-colorBlue "Project setup complete! 👍  'cd $DIRECTORY_PATH$PROJECT_NAME' 'pnpm run start:tdd"
+colorBlue "Project setup complete! 👍  'cd $DIRECTORY_PATH/$PROJECT_NAME' 'pnpm run start:tdd"
