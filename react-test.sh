@@ -39,14 +39,10 @@ cd "$PROJECT_NAME"
 colorGreen "Installing Vite plugin for React with SWC..."
 pnpm add -D @vitejs/plugin-react-swc
 
-# Install the correct version of ESLint and related plugins
-colorGreen "Installing the correct version of ESLint and related plugins..."
-pnpm add -D eslint@8.56.0 @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-react
 
-
-# Install other dependencies
+# Install dev dependencies
 colorGreen "Installing other development dependencies..."
-pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @types/jest @testing-library/react @testing-library/jest-dom @testing-library/user-event ts-jest jsdom concurrently prettier eslint-plugin-prettier eslint-config-prettier
+pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom concurrently prettier eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-react eslint-plugin-prettier eslint-config-prettier
 
 # Adding scripts to package.json for TDD and testing using the correct jq syntax
 # Modify the package.json to add additional scripts
@@ -67,6 +63,10 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    open: true, // Automatically opens the default browser
+    port: 3000
+  },
   plugins: [react()],
   // ...other configurations
 })
@@ -152,6 +152,6 @@ export default defineConfig({
 })
 EOF
 
-
 # Output success message
-colorBlue "Project setup complete! 👍  'cd $DIRECTORY_PATH/$PROJECT_NAME' 'pnpm run start:tdd"
+colorBlue "Project setup complete! 👍 cd $DIRECTORY_PATH/$PROJECT_NAME\n"
+colorGreen "Dev ➜ pnpm dev\nTest ➜ pnpm test\nTDD ➜ pnpm start:tdd\n" 
