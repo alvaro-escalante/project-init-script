@@ -44,13 +44,58 @@ pnpm add -D @vitejs/plugin-react-swc
 colorGreen "Installing other development dependencies..."
 pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom concurrently prettier eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-react eslint-plugin-prettier eslint-config-prettier
 
+colorGreen "Installing Cypress"
 pnpm add -D cypress    
   
+colorGreen "Installing Tailwind"
 pnpm install -D tailwindcss postcss autoprefixer   
 
-pnpm dlx tailwindcss init -p
+cat <<EOF > postcss.config.js
+/** @type {import('postcss-load-config').Config} */
+const config = {
+  plugins: {
+    tailwindcss: {},
+  },
+}
 
-# Adding scripts to package.json for TDD and testing using the correct jq syntax
+export default config
+EOF
+
+cat <<EOF > tailwind.config.ts
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  theme: {
+    extend: {
+      spacing: {
+        '33': '7rem',
+      },
+      borderRadius: {
+        custom: '1.1rem', // Add your custom size here
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic':
+          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      screens: {
+        sm: '700px', // This sets the 'sm' breakpoint to 500px
+      },
+    },
+  },
+  plugins: [],
+  darkMode: 'class',
+}
+export default config
+EOF
+
+cat <<EOF > src/global.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+EOF
+
 # Modify the package.json to add additional scripts
 jq '.scripts.dev = "vite" |
   .scripts.build = "vite build" |
@@ -123,7 +168,32 @@ cat <<EOF > .prettierrc
 EOF
 
 # Create a Jest setup file to configure additional matchers
-echo "import '@testing-library/jest-dom';" > src/setupTests.ts
+echo "import '@testing-library/jest-dom';" > ./setupTests.ts
+
+# Change tsconfig.json to include the setupTests file
+cat <<EOF > tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["./", "setupTests.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+EOF
 
 # Create a Vitest configuration file as a TypeScript module
 cat <<EOF > vitest.config.ts
@@ -133,7 +203,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/setupTests.ts'],
+    setupFiles: ['./setupTests.ts'],
     include: ['**/*.{test,spec}.{js,jsx,ts,tsx}'],
     exclude: [
       '**/node_modules/**',
