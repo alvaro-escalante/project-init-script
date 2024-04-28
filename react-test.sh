@@ -44,10 +44,18 @@ pnpm add -D @vitejs/plugin-react-swc
 colorGreen "Installing other development dependencies..."
 pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom concurrently prettier eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-react eslint-plugin-prettier eslint-config-prettier
 
+pnpm add -D cypress    
+  
+pnpm install -D tailwindcss postcss autoprefixer   
+
+pnpm dlx tailwindcss init -p
+
 # Adding scripts to package.json for TDD and testing using the correct jq syntax
 # Modify the package.json to add additional scripts
 jq '.scripts.dev = "vite" |
   .scripts.build = "vite build" |
+  .scripts["cypress:open"] = "cypress open" |
+  .scripts["cypress:run"] = "cypress run" |
   .scripts.test = "vitest" |
   .scripts["test:watch"] = "vitest --watch" |
   .scripts["test:coverage"] = "vitest --coverage" |
