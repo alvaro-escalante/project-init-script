@@ -42,7 +42,7 @@ pnpm add -D @vitejs/plugin-react-swc
 
 # Install dev dependencies
 colorGreen "Installing other development dependencies..."
-pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom concurrently prettier eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-react eslint-plugin-prettier eslint-config-prettier
+pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom concurrently prettier eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-react eslint-plugin-prettier eslint-config-prettier install prettier-plugin-tailwindcss
 
 colorGreen "Installing Cypress"
 pnpm add -D cypress    
@@ -229,10 +229,11 @@ EOF
 # Create Prettier configuration file
 cat <<EOF > .prettierrc
 {
-  "semi": false,
+  "semi": true,
   "singleQuote": true,
   "printWidth": 80,
-  "tabWidth": 2
+  "tabWidth": 2,
+  "plugins": ["prettier-plugin-tailwindcss"]
 }
 EOF
 
