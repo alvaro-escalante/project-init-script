@@ -182,9 +182,18 @@ jq '.scripts.dev = "vite" |
 cat <<EOF > vite.config.ts
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src'),
+      '@assets': resolve(__dirname, './src/assets'),
+      '@hooks': resolve(__dirname, './src/hooks'),
+      '@components': resolve(__dirname, './src/components')
+    }
+  },
   server: {
     open: true, // Automatically opens the default browser
     port: 3000
@@ -245,6 +254,7 @@ cat <<EOF > tsconfig.json
 {
   "compilerOptions": {
     "target": "ES2020",
+    "baseUrl": ".",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
@@ -258,7 +268,13 @@ cat <<EOF > tsconfig.json
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@assets/*": ["src/assets/*"],
+      "@hooks/*": ["src/hooks/*"]
+    },
   },
   "include": ["./", "setupTests.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
