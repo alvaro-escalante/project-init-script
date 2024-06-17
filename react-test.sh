@@ -39,11 +39,9 @@ cd "$PROJECT_NAME"
 colorGreen "Installing Vite plugin for React with SWC..."
 pnpm add -D @vitejs/plugin-react-swc
 
-
 # Install dev dependencies
 colorGreen "Installing other development dependencies..."
 pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom concurrently prettier eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-react eslint-plugin-prettier eslint-config-prettier install prettier-plugin-tailwindcss
-
   
 colorGreen "Installing Tailwind"
 pnpm install -D tailwindcss postcss autoprefixer   
@@ -163,16 +161,22 @@ button:focus-visible {
 }
 EOF
 
-# Modify the package.json to add additional scripts
-jq '.scripts.dev = "vite" |
-  .scripts.build = "vite build" |
-  .scripts.test = "vitest" |
-  .scripts["test:watch"] = "vitest --watch" |
-  .scripts["test:coverage"] = "vitest --coverage" |
-  .scripts["test:ui"] = "vitest --ui" |
-  .scripts.lint = "eslint . --ext .js,.jsx,.ts,.tsx" |
-  .scripts["lint:fix"] = "eslint . --ext .js,.jsx,.ts,.tsx --fix" |
-  .scripts["start:tdd"] = "concurrently --prefix none \u0027pnpm run dev\u0027 \u0027pnpm run test:watch\u0027"' package.json > package.json.tmp && mv package.json.tmp package.json
+node -e "
+let pkg = require('./package.json');
+pkg.type = 'module';
+pkg.scripts = {
+  dev: 'vite',
+  build: 'vite build',
+  test: 'vitest',
+  'test:watch': 'vitest --watch',
+  'test:coverage': 'vitest --coverage',
+  'test:ui': 'vitest --ui',
+  lint: 'eslint . --ext .js,.jsx,.ts,.tsx',
+  'lint:fix': 'eslint . --ext .js,.jsx,.ts,.tsx --fix',
+  'start:tdd': 'concurrently --prefix none \u0027pnpm run dev\u0027 \u0027pnpm run test:watch\u0027'
+};
+require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+"
 
 # Create a Vite configuration file
 cat <<EOF > vite.config.ts
@@ -242,8 +246,50 @@ cat <<EOF > .prettierrc
 }
 EOF
 
-# Create a Jest setup file to configure additional matchers
-echo "import '@testing-library/jest-dom';" > ./setupTests.ts
+# Create a setupTest global file
+cat <<EOF > setupTests.ts
+import { afterAll, beforeAll, beforeEach } from 'vitest';
+import { expect } from 'vitest';
+import matchers from '@testing-library/jest-dom/matchers';
+
+expect.extend(matchers);
+
+beforeAll(() => {
+  // @ts-expect-error type
+  globalThis.something = 'something';
+});
+
+beforeAll(async () => {
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(null);
+    }, 300);
+  });
+});
+
+beforeEach(async () => {
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(null);
+    }, 10);
+  });
+});
+
+afterAll(() => {
+  // @ts-expect-error type
+  delete globalThis.something;
+});
+
+afterAll(async () => {
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(null);
+    }, 500);
+  });
+});
+
+EOF
+
 
 # Change tsconfig.json to include the setupTests file
 cat <<EOF > tsconfig.json
