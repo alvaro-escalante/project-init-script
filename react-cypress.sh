@@ -44,6 +44,8 @@ pnpm add -D @vitejs/plugin-react-swc
 colorGreen "Installing other development dependencies..."
 pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom concurrently prettier eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-react eslint-plugin-prettier eslint-config-prettier install prettier-plugin-tailwindcss
 
+colorGreen "Installing Cypress"
+pnpm add -D cypress    
   
 colorGreen "Installing Tailwind"
 pnpm install -D tailwindcss postcss autoprefixer   
@@ -166,6 +168,8 @@ EOF
 # Modify the package.json to add additional scripts
 jq '.scripts.dev = "vite" |
   .scripts.build = "vite build" |
+  .scripts["cypress:open"] = "cypress open" |
+  .scripts["cypress:run"] = "cypress run" |
   .scripts.test = "vitest" |
   .scripts["test:watch"] = "vitest --watch" |
   .scripts["test:coverage"] = "vitest --coverage" |
@@ -314,4 +318,4 @@ EOF
 
 # Output success message
 colorBlue "Project setup complete! 👍 cd $DIRECTORY_PATH/$PROJECT_NAME\n"
-colorGreen "Dev ➜ pnpm dev\nTest ➜ pnpm test" 
+colorGreen "Dev ➜ pnpm dev\nTest ➜ pnpm test\nTDD ➜ pnpm start:tdd\n" 
