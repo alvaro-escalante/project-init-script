@@ -41,49 +41,30 @@ pnpm add -D @vitejs/plugin-react-swc
 
 # Install dev dependencies
 colorGreen "Installing other development dependencies..."
-pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom concurrently prettier eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-react eslint-plugin-prettier eslint-config-prettier install prettier-plugin-tailwindcss
+pnpm add -D vitest @vitest/coverage-v8 @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom concurrently prettier eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-react eslint-plugin-prettier eslint-config-prettier install prettier-plugin-tailwindcss @types/node
   
 colorGreen "Installing Tailwind"
 pnpm install -D tailwindcss postcss autoprefixer   
 
 cat <<EOF > postcss.config.js
-/** @type {import('postcss-load-config').Config} */
-const config = {
+export default {
   plugins: {
     tailwindcss: {},
+    autoprefixer: {},
   },
 }
-
-export default config
 EOF
 
-cat <<EOF > tailwind.config.ts
-import type { Config } from 'tailwindcss'
-
-const config: Config = {
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+cat <<EOF > tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/**/*.{html,js,ts,jsx,tsx}'],
   theme: {
-    extend: {
-      spacing: {
-        '33': '7rem',
-      },
-      borderRadius: {
-        custom: '1.1rem', // Add your custom size here
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-      },
-      screens: {
-        sm: '700px', // This sets the 'sm' breakpoint to 500px
-      },
-    },
+    extend: {},
   },
   plugins: [],
-  darkMode: 'class',
-}
-export default config
+};
+
 EOF
 
 cat <<EOF > src/index.css
@@ -240,6 +221,7 @@ cat <<EOF > .prettierrc
 {
   "semi": true,
   "singleQuote": true,
+  "jsxSingleQuote": true,
   "printWidth": 80,
   "tabWidth": 2,
   "plugins": ["prettier-plugin-tailwindcss"]
@@ -359,5 +341,5 @@ export default defineConfig({
 EOF
 
 # Output success message
-colorBlue "Project setup complete! 👍 cd $DIRECTORY_PATH/$PROJECT_NAME\n"
+colorBlue "Project setup complete! 👍 cd $DIRECTORY_PATH$PROJECT_NAME\n"
 colorGreen "Dev ➜ pnpm dev\nTest ➜ pnpm test" 
